@@ -4,17 +4,25 @@ set nocompatible
 " enable syntax highlighting
 syntax enable
 
+" enable folding
+set fdm=syntax
+set foldlevelstart=20
+
 " configure Vundle
 filetype on " without this vim emits a zero exit status, later, because of :ft off
 filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+set rtp+=~/.vim/bundle/Vundle.vim/
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
 
 " install Vundle bundles
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
   source ~/.vimrc.bundles.local
 endif
+call vundle#end()
 
 " ensure ftdetect et al work by including this after the Vundle stuff
 filetype plugin indent on
@@ -44,7 +52,7 @@ set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
 set wildmenu                                                 " show a navigable menu for tab completion
 set wildmode=longest,list,full
 
-" Enable basic mouse behavior such as resizing buffers.
+" Enable, basic mouse behavior such as resizing buffers.
 set mouse=a
 if exists('$TMUX')  " Support resizing in tmux
   set ttymouse=xterm2
@@ -112,6 +120,12 @@ endif
 
 " Don't copy the contents of an overwritten selection.
 vnoremap p "_dP
+if has("gui_running")
+   let s:uname = system("uname")
+   if s:uname == "Darwin\n"
+      set guifont=Inconsolata\ for\ Powerline:h15
+   endif
+endif
 
 " Go crazy!
 if filereadable(expand("~/.vimrc.local"))
@@ -135,3 +149,40 @@ function! Tab_Or_Complete()
   endif
 endfunction
 :inoremap <Tab> <C-R>=Tab_Or_Complete()<CR>
+
+" Compatible with ranger 1.4.2 through 1.6.*
+"
+" Add ranger as a file chooser in vim
+"
+" If you add this code to the .vimrc, ranger can be started using the command
+" ":RangerChooser" or the keybinding "<leader>r".  Once you select one or more
+" files, press enter and ranger will quit again and vim will open the selected
+" files.
+
+function! RangeChooser()
+    let temp = tempname()
+    " The option "--choosefiles" was added in ranger 1.5.1. Use the next line
+    " with ranger 1.4.2 through 1.5.0 instead.
+    "exec 'silent !ranger --choosefile=' . shellescape(temp)
+    exec 'silent !ranger --choosefiles=' . shellescape(temp)
+    if !filereadable(temp)
+        redraw!
+        " Nothing to read.
+        return
+    endif
+    let names = readfile(temp)
+    if empty(names)
+        redraw!
+        " Nothing to open.
+        return
+    endif
+    " Edit the first item.
+    exec 'edit ' . fnameescape(names[0])
+    " Add any remaning items to the arg list/buffer list.
+    for name in names[1:]
+        exec 'argadd ' . fnameescape(name)
+    endfor
+    redraw!
+endfunction
+command! -bar RangerChooser call RangeChooser()
+nnoremap <leader>r :<C-U>RangerChooser<CR>

@@ -34,6 +34,13 @@ fi
 export EDITOR='vim'
 export PYTHONSTARTUP="$HOME/.pythonrc.py"
 export PATH="$HOME/.bin:/usr/lib/colorgcc/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/local/bin:/Users/omar/bin"
+export PATH=/usr/local/bin:/usr/local/share/python:$PATH
+export PATH=/usr/texbin:$PATH
+export WORKON_HOME=~/PythonEnvironments
+
+source /usr/local/bin/virtualenvwrapper.sh
+source /usr/local/opt/autoenv/activate.sh
+
  # }}}
 
 # {{{ Program aliases
@@ -127,13 +134,6 @@ alias browse='nautilus --no-desktop "$PWD" &>/dev/null &!'
 alias socks='ssh -fND'
 alias ping-scan='nmap -sP -PE -R'
 alias port-scan='nmap -p'
-
-# berkeley inst accounts
-alias cs164='ssh cs164-fo@torus.cs.berkeley.edu'
-alias ee122='ssh ee122-ad@torus.cs.berkeley.edu'
-
-# fusi specific
-alias cdf='cd ~/html/fusi'
 
 # }}}
 
